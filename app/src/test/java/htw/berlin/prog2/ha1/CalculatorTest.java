@@ -88,7 +88,23 @@ class CalculatorTest {
         assertEquals(expected, actual);
     }
 
-
     //TODO hier weitere Tests erstellen
+
+    @Test
+    @DisplayName("should display negative result when subtracting two positive numbers")
+    void testSubtractionHigherNumber() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(6);
+        calc.pressBinaryOperationKey("-");
+        calc.pressDigitKey(9);
+        calc.pressEqualsKey();
+
+        String expected = "-3";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
 }
 
