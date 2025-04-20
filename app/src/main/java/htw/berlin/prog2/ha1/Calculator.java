@@ -14,6 +14,10 @@ public class Calculator {
 
     private String latestOperation = "";
 
+    private double lastOperator; // Damit der 2. Operand gemerkt wird.
+
+    private boolean equalsCheck; // Als Wert nach Binary Operation
+
     /**
      * @return den aktuellen Bildschirminhalt als String
      */
@@ -48,6 +52,8 @@ public class Calculator {
         screen = "0";
         latestOperation = "";
         latestValue = 0.0;
+        lastOperator = 0.0; // kein letzer Operator beim Clear, deswegen 0.0
+        equalsCheck = false; // Setzt den Wert zurück
     }
 
     /**
@@ -66,6 +72,7 @@ public class Calculator {
         }
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
+        equalsCheck = true;
     }
 
     /**
@@ -122,13 +129,28 @@ public class Calculator {
      * und das Ergebnis direkt angezeigt.
      */
     public void pressEqualsKey() {
-        var result = switch(latestOperation) {
-            case "+" -> latestValue + Double.parseDouble(screen);
-            case "-" -> latestValue - Double.parseDouble(screen);
-            case "x" -> latestValue * Double.parseDouble(screen);
-            case "/" -> latestValue / Double.parseDouble(screen);
+        if (latestOperation.isEmpty()) { // Skippt, wenn nichts drinnen
+            return;
+        }
+
+        double currentWert = Double.parseDouble(screen);
+
+        if (equalsCheck) {
+            lastOperator = currentWert;
+            equalsCheck = false;
+        }
+
+        var result = switch(latestOperation) { // Oberhalb festgelegt damit die Rechnung funktioniert (Auch für mich verständlicher tbh)
+            case "+" -> latestValue + lastOperator;
+            case "-" -> latestValue - lastOperator;
+            case "x" -> latestValue * lastOperator;
+            case "/" -> latestValue / lastOperator;
             default -> throw new IllegalArgumentException();
         };
+
+        latestValue = result; // Ergebnis festgelegt, damit Rechnung fortgesetzt wird
+        screen = Double.toString(result);
+
         screen = Double.toString(result);
         if(screen.equals("Infinity")) screen = "Error";
         if(screen.endsWith(".0")) screen = screen.substring(0,screen.length()-2);
